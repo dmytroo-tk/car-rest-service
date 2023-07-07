@@ -1,4 +1,4 @@
-package com.example.carrestservice.entity;
+package com.example.carrestservice.model.entity;
 
 
 import jakarta.persistence.*;
