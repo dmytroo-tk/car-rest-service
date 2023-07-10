@@ -19,23 +19,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
-
-    private final CarMapper mapper;
+    private final CarMapper carMapper;
 
     @Override
     public CarDTO create(CarDTO carDTO) {
         try {
-            Car car = mapper.toCar(carDTO);
-            return mapper.toCarDto(carRepository.save(car));
+            Car car = carMapper.toEntity(carDTO);
+            return carMapper.toDto(carRepository.save(car));
         } catch (RuntimeException e) {
             throw new EntityNotCreatedException(carDTO + " not created", e);
         }
     }
 
     @Override
+    public List<CarDTO> createAll(List<CarDTO> carDTOs) {
+        try {
+            List<Car> cars = carMapper.toEntity(carDTOs);
+            return carMapper.toDto(carRepository.saveAll(cars));
+        } catch (RuntimeException e) {
+            throw new EntityNotCreatedException(carDTOs + " not created", e);
+        }
+    }
+
+    @Override
     public CarDTO get(String id) {
         try {
-            return mapper.toCarDto(carRepository.findById(id).orElseThrow(
+            return carMapper.toDto(carRepository.findById(id).orElseThrow(
                     () -> new EntityNotFoundException("Car with id: " + id + " not found")));
         } catch (RuntimeException e) {
             throw new EntityNotFoundException("Car with id: " + id + " not found");
@@ -44,7 +53,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public List<CarDTO> getAll() {
-        return mapper.toCarDto(carRepository.findAll());
+        return carMapper.toDto(carRepository.findAll());
     }
 
     @Override
@@ -52,9 +61,9 @@ public class CarServiceImpl implements CarService {
         try {
             Car car = carRepository.findById(carDTO.objectId()).orElseThrow(
                     () -> new EntityNotFoundException("Car with id: " + carDTO.objectId() + " not found"));
-            BeanUtils.copyProperties(mapper.toCar(carDTO), car);
+            BeanUtils.copyProperties(carMapper.toEntity(carDTO), car);
 
-            return mapper.toCarDto(carRepository.save(car));
+            return carMapper.toDto(carRepository.save(car));
         } catch (RuntimeException e) {
             throw new EntityNotUpdatedException(carDTO + " not updated", e);
         }
@@ -69,5 +78,11 @@ public class CarServiceImpl implements CarService {
         } catch (RuntimeException e) {
             throw new EntityNotDeletedException("Car with id: " + id + " not deleted", e);
         }
+    }
+
+    @Override
+    public List<CarDTO> searchCars(String brand, String model, Integer minYear, Integer maxYear, String bodyType) {
+        List<Car> cars = carRepository.search(brand, model, minYear, maxYear, bodyType);
+        return carMapper.toDto(cars);
     }
 }

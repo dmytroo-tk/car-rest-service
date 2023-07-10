@@ -5,6 +5,5 @@ public record CarDTO(
         String brand,
         String model,
         int yearOfManufacture,
-        String bodyType
-) {
+        String bodyType) {
 }
