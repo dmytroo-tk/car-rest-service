@@ -19,13 +19,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
-    private final CarMapper carMapper;
+
+    private final CarMapper mapper;
 
     @Override
     public CarDTO create(CarDTO carDTO) {
         try {
-            Car car = carMapper.mapDtoToCar(carDTO);
-            return carMapper.mapCarToDto(carRepository.save(car));
+            Car car = mapper.toCar(carDTO);
+            return mapper.toCarDto(carRepository.save(car));
         } catch (RuntimeException e) {
             throw new EntityNotCreatedException(carDTO + " not created", e);
         }
@@ -34,7 +35,7 @@ public class CarServiceImpl implements CarService {
     @Override
     public CarDTO get(String id) {
         try {
-            return carMapper.mapCarToDto(carRepository.findById(id).orElseThrow(
+            return mapper.toCarDto(carRepository.findById(id).orElseThrow(
                     () -> new EntityNotFoundException("Car with id: " + id + " not found")));
         } catch (RuntimeException e) {
             throw new EntityNotFoundException("Car with id: " + id + " not found");
@@ -43,7 +44,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public List<CarDTO> getAll() {
-        return carMapper.mapCarToDto(carRepository.findAll());
+        return mapper.toCarDto(carRepository.findAll());
     }
 
     @Override
@@ -51,9 +52,9 @@ public class CarServiceImpl implements CarService {
         try {
             Car car = carRepository.findById(carDTO.objectId()).orElseThrow(
                     () -> new EntityNotFoundException("Car with id: " + carDTO.objectId() + " not found"));
-            BeanUtils.copyProperties(carMapper.mapDtoToCar(carDTO), car);
+            BeanUtils.copyProperties(mapper.toCar(carDTO), car);
 
-            return carMapper.mapCarToDto(carRepository.save(car));
+            return mapper.toCarDto(carRepository.save(car));
         } catch (RuntimeException e) {
             throw new EntityNotUpdatedException(carDTO + " not updated", e);
         }

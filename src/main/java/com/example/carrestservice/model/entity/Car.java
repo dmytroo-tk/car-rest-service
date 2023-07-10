@@ -26,7 +26,6 @@ public class Car {
     private String model;
     @Column(name = "year_of_manufacture")
     private int yearOfManufacture;
-    @Enumerated(EnumType.STRING)
     @Column(name = "body_type")
     private String bodyType;
 
