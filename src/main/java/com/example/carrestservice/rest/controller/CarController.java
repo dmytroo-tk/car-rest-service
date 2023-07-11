@@ -47,9 +47,9 @@ public class CarController {
             @RequestParam(required = false) String model,
             @RequestParam(required = false) Integer minYear,
             @RequestParam(required = false) Integer maxYear,
-            @RequestParam(required = false) String category
+            @RequestParam(required = false) String bodyType
     ) {
-        List<CarDTO> cars = carService.searchCars(brand, model, minYear, maxYear, category);
+        List<CarDTO> cars = carService.searchCars(brand, model, minYear, maxYear, bodyType);
         return ResponseEntity.ok(cars);
     }
 }
