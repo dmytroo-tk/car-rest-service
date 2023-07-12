@@ -11,6 +11,9 @@ import com.example.carrestservice.repository.CarRepository;
 import com.example.carrestservice.service.CarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,8 +55,11 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<CarDTO> getAll() {
-        return carMapper.toDto(carRepository.findAll());
+    public Page<CarDTO> getAll(Pageable pageable) {
+        Page<Car> carPage = carRepository.findAll(pageable);
+        List<CarDTO> carDTOs = carMapper.toDto(carPage.getContent());
+
+        return new PageImpl<>(carDTOs, pageable, carPage.getTotalElements());
     }
 
     @Override
@@ -81,8 +87,10 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<CarDTO> searchCars(String brand, String model, Integer minYear, Integer maxYear, String bodyType) {
-        List<Car> cars = carRepository.search(brand, model, minYear, maxYear, bodyType);
-        return carMapper.toDto(cars);
+    public Page<CarDTO> searchCars(String brand, String model, Integer minYear, Integer maxYear, String bodyType, Pageable pageable) {
+        Page<Car> carPage = carRepository.search(brand, model, minYear, maxYear, bodyType, pageable);
+        List<CarDTO> carDTOs = carMapper.toDto(carPage.getContent());
+
+        return new PageImpl<>(carDTOs, pageable, carPage.getTotalElements());
     }
 }

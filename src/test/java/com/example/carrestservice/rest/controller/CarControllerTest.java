@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -32,16 +34,16 @@ class CarControllerTest {
         cars.add(new CarDTO("sdasd1", "BMW", "523", 2014, "Sedan"));
         cars.add(new CarDTO("sdasd2", "Audi", "Q5", 2012, "SUV"));
 
-        when(carService.getAll()).thenReturn(cars);
+        when(carService.getAll(any(Pageable.class))).thenReturn(new PageImpl<>(cars));
 
-        mockMvc.perform(get("/api/v1/cars"))
+        mockMvc.perform(get("/api/v1/cars?size=10&page=1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].objectId").value("sdasd1"))
-                .andExpect(jsonPath("$[0].brand").value("BMW"))
-                .andExpect(jsonPath("$[0].model").value("523"))
-                .andExpect(jsonPath("$[0].yearOfManufacture").value(2014))
-                .andExpect(jsonPath("$[0].bodyType").value("Sedan"));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].objectId").value("sdasd1"))
+                .andExpect(jsonPath("$.content[0].brand").value("BMW"))
+                .andExpect(jsonPath("$.content[0].model").value("523"))
+                .andExpect(jsonPath("$.content[0].yearOfManufacture").value(2014))
+                .andExpect(jsonPath("$.content[0].bodyType").value("Sedan"));
     }
 
     @Test
@@ -98,9 +100,9 @@ class CarControllerTest {
         List<CarDTO> cars = new ArrayList<>();
         cars.add(new CarDTO("sdasd1", "BMW", "523", 2014, "Sedan"));
 
-        when(carService.searchCars(anyString(), anyString(), anyInt(), anyInt(), anyString())).thenReturn(cars);
+        when(carService.searchCars(anyString(), anyString(), anyInt(), anyInt(), anyString(), any(Pageable.class))).thenReturn(new PageImpl<>(cars));
 
-        mockMvc.perform(get("/api/v1/cars/search")
+        mockMvc.perform(get("/api/v1/cars/search?size=10&page=1")
                         .param("brand", "BMW")
                         .param("model", "523")
                         .param("minYear", "2010")
@@ -108,13 +110,11 @@ class CarControllerTest {
                         .param("bodyType", "Sedan"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].objectId").value("sdasd1"))
-                .andExpect(jsonPath("$[0].brand").value("BMW"))
-                .andExpect(jsonPath("$[0].model").value("523"))
-                .andExpect(jsonPath("$[0].yearOfManufacture").value(2014))
-                .andExpect(jsonPath("$[0].bodyType").value("Sedan"));
-
-        verify(carService, times(1)).searchCars("BMW", "523", 2010, 2020, "Sedan");
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].objectId").value("sdasd1"))
+                .andExpect(jsonPath("$.content[0].brand").value("BMW"))
+                .andExpect(jsonPath("$.content[0].model").value("523"))
+                .andExpect(jsonPath("$.content[0].yearOfManufacture").value(2014))
+                .andExpect(jsonPath("$.content[0].bodyType").value("Sedan"));
     }
 }

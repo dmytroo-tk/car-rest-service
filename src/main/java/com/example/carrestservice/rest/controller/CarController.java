@@ -3,11 +3,13 @@ package com.example.carrestservice.rest.controller;
 import com.example.carrestservice.model.dto.CarDTO;
 import com.example.carrestservice.service.CarService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/cars")
@@ -20,9 +22,9 @@ public class CarController {
         return ResponseEntity.status(HttpStatus.CREATED).body(carService.create(car));
     }
 
-    @GetMapping
-    public ResponseEntity<List<CarDTO>> getAll() {
-        return ResponseEntity.ok(carService.getAll());
+    @GetMapping(params = {"page", "size"})
+    public ResponseEntity<Page<CarDTO>> getAll(@PageableDefault(sort = {"brand"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(carService.getAll(pageable));
     }
 
     @GetMapping("/{id}")
@@ -41,15 +43,16 @@ public class CarController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<CarDTO>> searchCars(
+    @GetMapping(value = "/search", params = {"page", "size"})
+    public ResponseEntity<Page<CarDTO>> searchCars(
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String model,
             @RequestParam(required = false) Integer minYear,
             @RequestParam(required = false) Integer maxYear,
-            @RequestParam(required = false) String bodyType
+            @RequestParam(required = false) String bodyType,
+            @PageableDefault(sort = {"brand"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        List<CarDTO> cars = carService.searchCars(brand, model, minYear, maxYear, bodyType);
+        Page<CarDTO> cars = carService.searchCars(brand, model, minYear, maxYear, bodyType, pageable);
         return ResponseEntity.ok(cars);
     }
 }
