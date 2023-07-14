@@ -1,4 +1,4 @@
-package com.example.carrestservice.entity;
+package com.example.carrestservice.model.entity;
 
 
 import jakarta.persistence.*;
@@ -26,7 +26,6 @@ public class Car {
     private String model;
     @Column(name = "year_of_manufacture")
     private int yearOfManufacture;
-    @Enumerated(EnumType.STRING)
     @Column(name = "body_type")
     private String bodyType;
 
