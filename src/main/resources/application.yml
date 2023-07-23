@@ -7,5 +7,10 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
-cars-file-path: src/main/resources/file.csv
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-e4pibinhg6lsobn4.us.auth0.com/
+auth0:
+  audience: https://car-service
