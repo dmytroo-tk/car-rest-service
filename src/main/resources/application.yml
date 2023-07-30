@@ -14,3 +14,6 @@ spring:
           issuer-uri: https://dev-e4pibinhg6lsobn4.us.auth0.com/
 auth0:
   audience: https://car-service
+springdoc:
+  api-docs:
+    path: /api-docs

@@ -27,6 +27,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api-docs", "/swagger-ui/**").permitAll()
                         .requestMatchers(HttpMethod.POST).hasAuthority("SCOPE_write:car")
                         .requestMatchers(HttpMethod.PUT).hasAuthority("SCOPE_write:car")
                         .requestMatchers(HttpMethod.DELETE).hasAuthority("SCOPE_write:car")
