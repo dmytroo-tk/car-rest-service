@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/car-rest-service
+    url: jdbc:postgresql://db:5432/car-rest-service
     username: postgres
     password: baloo
   jpa:

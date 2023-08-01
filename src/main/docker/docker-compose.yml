@@ -1,0 +1,30 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    container_name: spring-boot-db
+    restart: always
+    environment:
+      POSTGRES_DB: car-rest-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: baloo
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: spring-boot-app
+    restart: always
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/car-rest-service
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: baloo
+      SPRING_FLYWAY_ENABLED: "true"
+    ports:
+      - "8080:8080"
+volumes:
+  pgdata:
